@@ -1,0 +1,13 @@
+.DS_Store
+.vscode/
+.idea/
+
+firestore-debug.log
+firebase-debug.log
+firebase-debug.*.log
+npm-debug.log
+ui-debug.log
+pubsub-debug.log
+
+.firebase
+.firebase-cache
