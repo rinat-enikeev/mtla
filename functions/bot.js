@@ -91,6 +91,9 @@ bot.on('message', async (ctx) => {
         }
       }
 
+      // because of rounding it's possible that it would be not enough funds
+      toDistribute -= 0.01;
+
       if (
         toDistribute === 0.0 ||
         toDistribute === undefined ||
