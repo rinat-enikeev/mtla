@@ -1,19 +1,11 @@
 require('dotenv').config();
 
 const { onRequest } = require('firebase-functions/v2/https');
-const bot = require('./bot.js');
 const StellarSdk = require('@stellar/stellar-sdk');
 const { fetchCouncil } = require('./council.js');
 const { EURMTL_CODE, EURMTL_ISSUER, HORIZON_URL } = require('./constants.js');
 const { getBalanceOfEURMTL } = require('./horizon.js');
 const { logger } = require('firebase-functions');
-
-exports.echoBot = onRequest(
-  { region: 'europe-central2' },
-  async (request, response) => {
-    return await bot.handleUpdate(request.body, response);
-  }
-);
 
 exports.distribute = onRequest(
   { region: 'europe-central2' },
