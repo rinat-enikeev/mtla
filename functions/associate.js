@@ -12,7 +12,7 @@ module.exports = class Associate {
   }
 
   totalPowerWithDelegations() {
-    let delegated = this.power;
+    let delegated = this.power >= 2 ? this.power : 0;
     for (const voter of this.electorate) {
       delegated += voter.totalPowerWithDelegations();
     }
