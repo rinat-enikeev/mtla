@@ -2,9 +2,10 @@
 const { session, Telegraf, Markup } = require('telegraf');
 const StellarSdk = require('@stellar/stellar-sdk');
 const { EURMTL_CODE, EURMTL_ISSUER, HORIZON_URL } = require('./constants.js');
-const { Horizon, StrKey } = require('@stellar/stellar-sdk');
+const { StrKey } = require('@stellar/stellar-sdk');
 const { error } = require('firebase-functions/logger');
 const { fetchCouncil } = require('./council.js');
+const { getBalanceOfEURMTL } = require('./horizon.js');
 
 const bot = new Telegraf(process.env.MTLA_PAYOUTS_BOT_TOKEN);
 bot.use(session());
@@ -76,26 +77,11 @@ bot.on('message', async (ctx) => {
   }
   if (ctx.session.isWaitingForStellarAddressToDistribute) {
     if (StrKey.isValidEd25519PublicKey(ctx.text)) {
-      const horizon = new Horizon.Server(HORIZON_URL);
-      let result = 'This is valid Stellar address\n';
+      const horizon = new StellarSdk.Horizon.Server(HORIZON_URL);
       const account = await horizon.loadAccount(ctx.text);
-      let toDistribute = 0.0;
-      for (const balance of account.balances) {
-        if (
-          balance.asset_code === EURMTL_CODE &&
-          balance.asset_issuer === EURMTL_ISSUER
-        ) {
-          const eurmtl = parseFloat(balance.balance);
-          result += 'EURMTL: ' + eurmtl.toString() + '\n';
-          toDistribute = eurmtl;
-        }
-      }
-
-      // because of rounding it's possible that it would be not enough funds
-      toDistribute -= 0.01;
-
+      const toDistribute = getBalanceOfEURMTL(account);
       if (
-        toDistribute === 0.0 ||
+        toDistribute <= 0.0 ||
         toDistribute === undefined ||
         toDistribute == null
       ) {
@@ -133,7 +119,7 @@ bot.on('message', async (ctx) => {
       transaction.setTimeout(300);
       transaction.addMemo(StellarSdk.Memo.text('MTLA payout'));
 
-      result += '<code>\n';
+      let result = '<code>\n';
       result += transaction.build().toEnvelope().toXDR('base64');
       result += '\n</code>';
       ctx.session.isWaitingForStellarAddressToDistribute = false;
