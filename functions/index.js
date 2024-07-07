@@ -41,12 +41,14 @@ exports.distribute = onRequest(
       fee: fee > 1000 ? fee : 1000,
       networkPassphrase: StellarSdk.Networks.PUBLIC,
     });
+    const distribution = {};
     council.forEach((element) => {
       const votes = element.totalPowerWithDelegations();
       const amount = ((votes / totalVotes) * toDistribute)
         .toFixed(7)
         .toString();
       logger.info('element.id: ' + amount);
+      distribution[element.id] = amount;
       transaction.addOperation(
         StellarSdk.Operation.payment({
           destination: element.id,
@@ -58,8 +60,12 @@ exports.distribute = onRequest(
     transaction.setTimeout(300);
     transaction.addMemo(StellarSdk.Memo.text('MTLA payout'));
 
-    return response
-      .status(200)
-      .send(transaction.build().toEnvelope().toXDR('base64'));
+    const responseData = {
+      toDistribute: toDistribute.toFixed(7),
+      distribution,
+      xdr: transaction.build().toEnvelope().toXDR('base64'),
+    };
+
+    return response.status(200).json(responseData);
   }
 );
