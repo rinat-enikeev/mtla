@@ -10,7 +10,7 @@ const {
   COUNCIL_READY_VALUE,
 } = require('./constants.js');
 
-async function fetchCouncil() {
+async function fetchCouncil(assetCode, assetIssuer) {
   const horizon = new Horizon.Server(HORIZON_URL);
 
   // Fetch accounts holding the asset
@@ -26,6 +26,16 @@ async function fetchCouncil() {
   const associationSystem = new AssociationSystem();
   while (records.length > 0) {
     for (const account of records) {
+      const hasLabrTrustline = account.balances.some(
+        (balance) =>
+          balance.asset_code === assetCode &&
+          balance.asset_issuer === assetIssuer
+      );
+
+      if (!hasLabrTrustline) {
+        continue;
+      }
+
       for (const balance of account.balances) {
         if (
           balance.asset_code === MTLAP_CODE &&

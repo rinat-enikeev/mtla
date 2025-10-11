@@ -1,15 +1,11 @@
 /* eslint-disable require-jsdoc */
-const { EURMTL_CODE, EURMTL_ISSUER } = require('./constants.js');
 
-function getBalanceOfEURMTL(account) {
+function getBalanceOfAsset(account, code, tokenIssuer) {
   let toDistribute = 0.0;
   for (const balance of account.balances) {
-    if (
-      balance.asset_code === EURMTL_CODE &&
-      balance.asset_issuer === EURMTL_ISSUER
-    ) {
-      const eurmtl = parseFloat(balance.balance);
-      toDistribute = eurmtl;
+    if (balance.asset_code === code && balance.asset_issuer === tokenIssuer) {
+      const assetAmount = parseFloat(balance.balance);
+      toDistribute = assetAmount;
     }
   }
 
@@ -25,4 +21,4 @@ function getBalanceOfEURMTL(account) {
   return toDistribute;
 }
 
-module.exports.getBalanceOfEURMTL = getBalanceOfEURMTL;
+module.exports.getBalanceOfAsset = getBalanceOfAsset;

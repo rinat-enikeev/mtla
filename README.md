@@ -4,7 +4,7 @@ Code for Montelibero Cloud Functions.
 
 ## MTLA Payouts Telegram Bot 
 
-The Bot is able to show the list of Stellar addresses of the MTLA Council and prepare transaction for distributing full `EURMTL` balance from the given Stellar address to the Council with respect to Council members voting power.  
+The Bot is able to show the list of Stellar addresses of the MTLA Council and prepare transaction for distributing full balance from the given Stellar address to the Council with respect to Council members voting power.  
 
 ### Deployment
 
