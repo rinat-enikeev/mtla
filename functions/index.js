@@ -34,7 +34,13 @@ exports.distribute = onRequest(
       assetIssuer: EURMTL_ISSUER,
     });
 
-    return distribute(address, EURMTL_CODE, EURMTL_ISSUER);
+    try {
+      const result = await distribute(address, EURMTL_CODE, EURMTL_ISSUER);
+      response.json(result);
+    } catch (error) {
+      logger.error('Error in distribute', { error: error.message });
+      response.status(500).send('Internal server error');
+    }
   }
 );
 
@@ -59,7 +65,13 @@ exports.labrDistributionTx = onRequest(
       assetIssuer: LABR_ISSUER,
     });
 
-    return distribute(address, LABR_CODE, LABR_ISSUER);
+    try {
+      const result = await distribute(address, LABR_CODE, LABR_ISSUER);
+      response.json(result);
+    } catch (error) {
+      logger.error('Error in labrDistributionTx', { error: error.message });
+      response.status(500).send('Internal server error');
+    }
   }
 );
 
