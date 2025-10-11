@@ -60,16 +60,17 @@ async function distribute(address, assetCode, assetIssuer) {
   const distribution = {};
   council.forEach((element) => {
     const votes = element.totalPowerWithDelegations();
-    const amount = ((votes / totalVotes) * toDistribute).toFixed(7).toString();
-    logger.info('element.id: ' + amount);
-    distribution[element.id] = amount;
-    transaction.addOperation(
-      StellarSdk.Operation.payment({
-        destination: element.id,
-        asset: new StellarSdk.Asset(assetCode, assetIssuer),
-        amount: amount,
-      })
-    );
+    const amount = ((votes / totalVotes) * toDistribute).toFixed(7);
+    if (amount >= 0) {
+      distribution[element.id] = amount;
+      transaction.addOperation(
+        StellarSdk.Operation.payment({
+          destination: element.id,
+          asset: new StellarSdk.Asset(assetCode, assetIssuer),
+          amount: amount.toString(),
+        })
+      );
+    }
   });
   transaction.setTimeout(300);
   transaction.addMemo(StellarSdk.Memo.text('MTLA payout ' + assetCode));
